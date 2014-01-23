@@ -36,7 +36,7 @@ describe('pliers.js', function () {
         , output: nullStream
         })
 
-      pliers.filesets('txt', '*.txt')
+      pliers.filesets('txt', 'watched.txt')
       pliers.filesets.txt.should.eql(['watched.txt'])
 
     })
@@ -437,13 +437,12 @@ describe('pliers.js', function () {
     it('should call function and pass filename of changed file when a changes happens', function (done) {
 
       var pliers = getPliers()
-        , watchedFile = join(__dirname, 'fixtures', 'watched.txt')
+        , watchedFile = join(__dirname, 'fixtures', 'a.txt')
 
-      pliers.filesets('watched', join(__dirname, 'fixtures', '*.txt'))
+      pliers.filesets('watched', join(__dirname, 'fixtures', 'a.txt'))
 
-      pliers.watch(pliers.filesets.watched, function (fsWatcher, filename) {
+      pliers.watch(pliers.filesets.watched, function (filename) {
         filename.should.equal(watchedFile)
-        fsWatcher.close()
         done()
       })
 
@@ -456,11 +455,10 @@ describe('pliers.js', function () {
     it('should run a task when a file in a fileset changes', function (done) {
 
       var pliers = getPliers()
-        , watchedFile = join(__dirname, 'fixtures', 'watched.txt')
+        , watchedFile = join(__dirname, 'fixtures', 'b.txt')
 
-      pliers.filesets('watched', join(__dirname, 'fixtures', '*.txt'))
-      pliers.watch(pliers.filesets.watched, function (fsWatcher) {
-        fsWatcher.close()
+      pliers.filesets('watched', join(__dirname, 'fixtures', 'b.txt'))
+      pliers.watch(pliers.filesets.watched, function () {
         done()
       })
 
@@ -474,15 +472,14 @@ describe('pliers.js', function () {
 
       var pliers = getPliers()
         , count = 0
-        , watchedFile = join(__dirname, 'fixtures', 'watched.txt')
+        , watchedFile = join(__dirname, 'fixtures', 'c.txt')
 
-      pliers.filesets('watched', join(__dirname, 'fixtures', '*.txt'))
+      pliers.filesets('watched', join(__dirname, 'fixtures', 'c.txt'))
 
-      pliers.watch(pliers.filesets.watched, function (fsWatcher) {
+      pliers.watch(pliers.filesets.watched, function () {
         count += 1
-        fsWatcher.close()
 
-        if (count === 10) {
+        if (count === 3) {
           clearInterval(interval)
           done()
         }
@@ -502,8 +499,7 @@ describe('pliers.js', function () {
         , count = 0
 
       pliers.filesets('watched', join(__dirname, 'fixtures', '*.txt'))
-      pliers.watch(pliers.filesets.watched, function (fsWatcher) {
-        fsWatcher.close()
+      pliers.watch(pliers.filesets.watched, function () {
         count++
       })
 
@@ -523,8 +519,7 @@ describe('pliers.js', function () {
         , nonFn = 'I am not a function'
 
       pliers.filesets('watched', join(__dirname, 'fixtures', '*.txt'))
-      pliers.watch(pliers.filesets.watched, function (fsWatcher) {
-        fsWatcher.close()
+      pliers.watch(pliers.filesets.watched, function () {
         try {
           nonFn()
         } catch (e) {
